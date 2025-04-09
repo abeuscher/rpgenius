@@ -1,0 +1,18 @@
+---
+permalink: /
+eleventyComputed:
+  title: "RPGENI.US"
+  description: "A Tool For Gamemasters"
+---
+{% extends "layouts/inc/base.njk" %}
+
+{%- include "layouts/inc/header.njk" -%}
+{% block content %}
+  <section class="intro">
+    <div class="content">
+      <h2>{{sitedata.overview.title}}</h2>
+      <p>{{sitedata.overview.intro}}</p>
+    </div>
+  </section>
+{% endblock %}
+{%- include "layouts/inc/footer.njk" -%}

@@ -1,0 +1,18 @@
+{
+  "lang": "en",
+  "dir": "ltr",
+  "name": "RPGENI.US",
+  "short_name": "rpgeni.us",
+  "icons": [
+    {
+      "src": "/assets/images/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#333",
+  "background_color": "#fff",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "natural"
+}

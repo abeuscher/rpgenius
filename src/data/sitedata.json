@@ -1,0 +1,25 @@
+{
+  "config": {
+    "imgPath": "assets/images/"
+  },
+  "meta": {
+    "title": "RPGENI.US",
+    "author": "Alex Beuscher",
+    "description": "",
+    "keywords": "",
+    "site_url": "repgeni.us",
+    "permalink": "https://rpgeni.us/"
+  },
+  "header": {
+    "name": "RPGENI.US",
+    "site_title": "A website."
+  },
+  "footer": {
+    "legal": "© 2025"
+  },
+  "overview": {
+    "title": "overview",
+    "intro_header": "Overview",
+    "intro": "Farts..."
+  }
+}
