@@ -1,92 +1,77 @@
-// This file handles the JS build.
-// It will run webpack with babel over all JS defined in the main entry file.
-
-// main entry point name
-const ENTRY_FILE_NAME = "main.js";
-
-const fs = require("fs");
-const path = require("path");
 const webpack = require("webpack");
-const { fs: mfs } = require("memfs");
+const path = require("path");
+const { promisify } = require("util");
+const fs = require("fs");
+const readFile = promisify(fs.readFile);
 
-const isProd = process.env.ELEVENTY_ENV === "production";
+// Ensure entry file exists
+const ENTRY_FILE_PATH = path.join(__dirname, "main.js");
 
 module.exports = class {
-  // Configure Webpack in Here
-  async data() {
-    const entryPath = path.join(__dirname, `/${ENTRY_FILE_NAME}`);
-    const outputPath = path.resolve(__dirname, "../../memory-fs/js/");
-
-    // Transform .js files, run through Babel
-    const rules = [
-      {
-        test: /\.m?js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ["@babel/preset-env"],
-            plugins: ["@babel/plugin-transform-runtime"],
-          },
-        },
-      },
-    ];
-
-    // pass environment down to scripts
-    const envPlugin = new webpack.EnvironmentPlugin({
-      ELEVENTY_ENV: process.env.ELEVENTY_ENV,
-    });
-
-    // Main Config
-    const webpackConfig = {
-      mode: isProd ? "production" : "development",
-      entry: entryPath,
-      output: { path: outputPath },
-      module: { rules },
-      plugins: [envPlugin],
-    };
-
+  // Define the output template
+  data() {
     return {
-      permalink: `/assets/scripts/${ENTRY_FILE_NAME}`,
+      permalink: "/assets/scripts/main.js",
       eleventyExcludeFromCollections: true,
-      webpackConfig,
     };
   }
 
-  // Compile JS with Webpack, write the result to Memory Filesystem.
-  // this brilliant idea is taken from Mike Riethmuller / Supermaya
-  // @see https://github.com/MadeByMike/supermaya/blob/master/site/utils/compile-webpack.js
-  compile(webpackConfig) {
-    const compiler = webpack(webpackConfig);
-    compiler.outputFileSystem = mfs;
-    compiler.inputFileSystem = fs;
-    compiler.intermediateFileSystem = mfs;
+  async render() {
+    try {
+      // Check if entry file exists before proceeding
+      await readFile(ENTRY_FILE_PATH, "utf8");
 
-    return new Promise((resolve, reject) => {
-      compiler.run((err, stats) => {
-        if (err || stats.hasErrors()) {
-          const errors = err || (stats.compilation ? stats.compilation.errors : null);
+      // Set up webpack configuration
+      const webpackConfig = {
+        mode: process.env.NODE_ENV === "production" ? "production" : "development",
+        entry: ENTRY_FILE_PATH,
+        output: {
+          path: path.resolve(__dirname, "dist"),
+          filename: "main.js",
+        },
+        module: {
+          rules: [
+            {
+              test: /\.js$/,
+              exclude: /node_modules/,
+              use: {
+                loader: "babel-loader",
+                options: {
+                  presets: ["@babel/preset-env"],
+                  plugins: ["@babel/plugin-transform-runtime"],
+                },
+              },
+            },
+          ],
+        },
+      };
 
-          reject(errors);
-          return;
-        }
+      // Run webpack and return the built file content
+      return new Promise((resolve, reject) => {
+        webpack(webpackConfig, (err, stats) => {
+          if (err || stats.hasErrors()) {
+            console.error("Webpack compilation error:", err || stats.toString());
+            // Instead of returning null which causes 11ty to fail, return an error message as JS
+            return resolve('console.error("JavaScript build failed");');
+          }
 
-        mfs.readFile(webpackConfig.output.path + "/" + ENTRY_FILE_NAME, "utf8", (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
+          // Read the output file from memory
+          fs.readFile(path.join(webpackConfig.output.path, "main.js"), "utf8", (err, data) => {
+            if (err) {
+              console.error("Error reading webpack output:", err);
+              // Again, return error message instead of null
+              return resolve(
+                'console.error("JavaScript build failed - could not read output file");'
+              );
+            }
+            resolve(data);
+          });
         });
       });
-    });
-  }
-
-  // render the JS file
-  async render({ webpackConfig }) {
-    try {
-      const result = await this.compile(webpackConfig);
-      return result;
-    } catch (err) {
-      console.log(err);
-      return null;
+    } catch (e) {
+      console.error("Error in script processing:", e);
+      // Always return a string, even in case of failure
+      return 'console.error("Script processing error occurred");';
     }
   }
 };

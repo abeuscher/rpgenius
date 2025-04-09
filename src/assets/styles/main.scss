@@ -8,3 +8,13 @@
 @use "base/header";
 @use "base/footer";
 @use "base/button";
+
+// Main SCSS file
+// If this file doesn't exist yet, create it with some minimal styling
+
+// Your SCSS code goes here
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
