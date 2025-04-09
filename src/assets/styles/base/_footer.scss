@@ -1,3 +1,5 @@
+@use "../settings/variables" as *;
+
 footer {
   background: radial-gradient(ellipse at center 60%, #999 0, #666 100%);
   padding: 50px 0 75px;

@@ -1,3 +1,5 @@
+@use "variables" as *;
+
 @font-face {
   font-family: "IBM Plex";
   src: url($font-path + "IBMPlexSans-Regular.ttf") format("truetype");

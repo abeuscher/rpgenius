@@ -1,10 +1,10 @@
-@import "settings/variables";
-@import "settings/fonts";
-@import "settings/icons";
+@use "settings/variables";
+@use "settings/fonts";
+@use "settings/icons";
 
-@import "utils/mixins";
+@use "utils/mixins";
 
-@import "base/base";
-@import "base/header";
-@import "base/footer";
-@import "base/button";
+@use "base/base";
+@use "base/header";
+@use "base/footer";
+@use "base/button";

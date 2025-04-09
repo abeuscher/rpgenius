@@ -1,3 +1,5 @@
+@use "../settings/variables" as *;
+
 @mixin min-width($breakpoint) {
   @each $bp, $val in $breakpoints {
     @if ($bp == $breakpoint) {
